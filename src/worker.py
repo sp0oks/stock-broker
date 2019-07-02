@@ -13,15 +13,14 @@ class Worker:
         self.broker = port
         
         self.socket = None
-        self.poller = zmq.Poller()
+        self.poller = None
 
-        self.heartbeat_interval = 5
+        self.heartbeat_interval = 2
         self.heartbeat_liveness = 3
         self.heartbeat_at = time() + self.heartbeat_interval
         self.max_reconnects = 5
 
         self.set_logger()
- 
         self.start()
 
     def run(self):
@@ -73,6 +72,7 @@ class Worker:
         self.socket = context.socket(zmq.DEALER)
         self.socket.setsockopt(zmq.IDENTITY, bytes(self.stock.encode('utf-8')))
         self.logger.info(f'Connecting to the broker...')
+        self.poller = zmq.Poller()
         self.poller.register(self.socket, zmq.POLLIN)
         self.socket.connect(f'tcp://localhost:{self.broker}')
 
