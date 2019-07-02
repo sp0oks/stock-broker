@@ -1,16 +1,12 @@
 from worker import Worker
-from client import Client
 from threading import Thread
+from random import uniform
 
 def main():
-    for i in range(5):
+    for i in range(20):
         print(f'Connecting worker #{i}...')
-        w = Worker(str(i), 0.5)
+        w = Worker(str(i), uniform(0.5, 3.0))
         Thread(target=w.run).start()
-    
-    #c = Client()
-    #c.register('COCA')
-    #c.consume()
-    
+       
 if __name__ == '__main__':
     main()

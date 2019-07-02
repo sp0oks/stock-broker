@@ -56,5 +56,5 @@ class Client:
             socks = dict(self.poller.poll(self.timeout))
             if socks.get(self.socket) == zmq.POLLIN:
                msg = self.socket.recv()
-               logger.info(f'New message: {msg}')
+               self.logger.info(f'New message: {msg}')
 
