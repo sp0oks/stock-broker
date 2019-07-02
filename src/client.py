@@ -39,6 +39,7 @@ class Client:
         self.socket.close()
 	
     def register(self, queue):
+	# Sends a request to the broker to register to a queue
         request = [b'REGISTER', bytes(queue.encode('utf-8'))]
         self.logger.info(f'Sending register request for queue [{queue}]...')
         self.socket.send_multipart(request)
@@ -54,6 +55,7 @@ class Client:
                 self.stop()
                 break
             socks = dict(self.poller.poll(self.timeout))
+	    # New message from the broker
             if socks.get(self.socket) == zmq.POLLIN:
                msg = self.socket.recv()
                self.logger.info(f'New message: {msg}')
