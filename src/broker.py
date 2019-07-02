@@ -45,6 +45,7 @@ class Broker:
         self.poller.register(self.frontend, zmq.POLLIN)
 
     def relay(self, frames):
+        # Gets the frames received from a worker and relays the content to its clients
         address = frames[0]
         content = frames[1]
         
@@ -71,12 +72,15 @@ class Broker:
                         self.relay(frames)
                     if b'HEARTBEAT' not in frames:
                         logging.info(f'Received {frames[1]} from {address}')
+            # Received a message from a client
             if socks.get(self.frontend) == zmq.POLLIN:
                 frames = self.frontend.recv_multipart()
                 address = frames[0]
+                # Register new client connecting to the broker
                 if address not in self.clients:
                     self.clients.append(address)
                 logging.info(f'New request from client: {frames[1:]}')
+                # If a request to register to a queue shows up, try to register the client to the queue it asks for
                 if b'REGISTER' in frames:
                     if self.workers.get(frames[2]) is not None:
                         self.workers[frames[2]].append(address)
@@ -84,7 +88,7 @@ class Broker:
                     else:
                         response = [address, b'BAD REQUEST']
                     self.frontend.send_multipart(response)
-            # Send heartbeat to idle workers and clients
+            # Send heartbeat to idle workers
             if time() > self.heartbeat_at:
                 for worker in self.workers.keys():
                     msg = [worker, b'HEARTBEAT']
