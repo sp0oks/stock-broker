@@ -5,6 +5,7 @@ from random import randint
 
 class Client:
     def __init__(self, port=4322, retries=3, timeout=2000):
+    # Creates variables
         self.id = b'C%d' % randint(0,10000)
         self.retries = retries
         self.timeout = timeout
@@ -26,6 +27,7 @@ class Client:
         handler.setFormatter(fmt)
 
     def start(self):
+    # Start up the connection to the broker
         context = zmq.Context.instance()
         self.socket = context.socket(zmq.DEALER)
         self.socket.connect(f'tcp://localhost:{self.broker}')
